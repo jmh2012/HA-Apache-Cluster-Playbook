@@ -1,0 +1,11 @@
+---
+
+cluster_name: webcluster
+shared_ip:
+
+primary_node:
+secondary_node:
+
+hacluster_password: $6$rounds=656000$mysecretsalt$cvH1ridIiygOvb.KbKhBpyL6PBbs4XgHUZkOemgSolh2Lhmsk8bGDa9qs34yLf05/b0jcEm5EfFqZInqw/4NX/
+hacluster_password_plain: jesse
+colocation_constraint: INFINITY

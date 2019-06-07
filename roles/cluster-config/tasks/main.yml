@@ -1,0 +1,33 @@
+---
+
+- name: Authenticate the cluster
+  shell: pcs cluster auth {{ primary }} {{ secondary }} -u hacluster -p {{ hacluster_password_plain }}
+  args:
+    executable: /bin/bash
+
+- name: Synchronize Corosync config
+  shell: pcs cluster setup --name {{ cluster_name }} {{ primary_node }} {{ failover_node }}
+  args:
+    executable: /bin/bash
+
+- name: Start the cluster
+  shell: pcs cluster start --all
+  args:
+    executable: /bin/bash
+
+- name: Set shared IP
+  shell: pcs resource create Cluster_VIP ocf:heartbeat:IPaddr2 ip={{ shared_ip }} cidr_netmask=24 op monitor interval=20s
+  args:
+    executable: /bin/bash
+
+- name: Add Apache service to the cluster
+  shell: pcs resource create WebServer ocf:heartbeat:apache configfile=/etc/httpd/conf/httpd.conf statusurl="http://127.0.0.1/server-status" op monitor interval=20s
+  args:
+    executable: /bin/bash
+
+- name: Set colocation constraint
+  shell: pcs constraint colocation add WebServer Cluster_VIP {{ colocation_constraint }}
+  args:
+    executable: /bin/bash
+
+

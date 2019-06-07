@@ -1,0 +1,45 @@
+---
+
+# TODO: configure /etc/hosts
+
+- name: Add Apache status config to each node
+  copy:
+    src: /httpd/conf.d/status.conf
+    dest: /etc/httpd/conf.d/status.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart apache
+
+- name: Install pacemaker
+  yum:
+    name:
+      - pacemaker
+      - pcs
+    state: present
+
+- name: Start and enable services
+  service:
+    name:
+      - pcsd
+      - firewalld
+    state: started
+    enabled: true 
+
+- name: Set common password for hacluster user
+  user:
+    name: hacluster
+    password: "{{ hacluster_password }}"
+
+- name: Add high-availability service to firewalld
+  firewalld:
+    service: high-availability
+    permanent: true
+    state: enabled
+  notify: reload firewalld
+
+- name: ensure Corosync and Pacemaker are enabled
+  service:
+    name:
+      - corosync
+      - pacemaker

@@ -1,0 +1,6 @@
+---
+
+# Apache role
+- src: git@github.com:jmh2012/Ansible-Apache-Role.git
+  scm: git
+  version: "0.1.1"
