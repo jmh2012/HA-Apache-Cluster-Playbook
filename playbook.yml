@@ -1,7 +1,14 @@
 ---
 
-- name: Configure Apache
+- name: Configure all nodes
   hosts: all
   become: true
   roles:
     - Ansible-Apache-Role
+    - common
+
+- name: Configure Cluster
+  hosts: primary
+  become: true
+  roles:
+    - cluster-config
