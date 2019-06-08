@@ -1,6 +1,13 @@
 ---
 
-# TODO: configure /etc/hosts
+- name: Add each node to /etc/hosts
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '.*{{ item }}$'
+    line: "{{ hostvars[item].ansible_host }} {{item}}"
+    state: present
+  when: hostvars[item].ansible_host is defined
+  with_items: "{{ groups.all }}"
 
 - name: Add Apache status config to each node
   copy:
