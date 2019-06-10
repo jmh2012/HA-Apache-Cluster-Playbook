@@ -1,12 +1,17 @@
 ---
 
 - name: Authenticate the cluster
-  shell: pcs cluster auth {{ primary }} {{ secondary }} -u hacluster -p {{ hacluster_password_plain }}
+  shell: pcs cluster auth {{ primary_node }} {{ secondary_node }} -u hacluster -p {{ hacluster_password_plain }}
   args:
     executable: /bin/bash
 
 - name: Synchronize Corosync config
-  shell: pcs cluster setup --name {{ cluster_name }} {{ primary_node }} {{ failover_node }}
+  shell: pcs cluster setup --name {{ cluster_name }} {{ primary_node }} {{ secondary_node }}
+  args:
+    executable: /bin/bash
+
+- name: Disable stonith
+  shell: pcs property set stonith-enabled=false
   args:
     executable: /bin/bash
 

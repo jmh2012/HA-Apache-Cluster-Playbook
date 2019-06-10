@@ -1,5 +1,19 @@
 ---
 
+- name: Ensure default Centos deps are available.
+  yum:
+    name: 
+      - firewalld
+      - which
+    state: present
+  notify: restart dbus
+
+- name: Ensure httpd service is stopped and disabled for pacemaker
+  systemd:
+    name: httpd
+    state: stopped
+    enabled: false
+
 - name: Add each node to /etc/hosts
   lineinfile:
     dest: /etc/hosts
@@ -11,12 +25,11 @@
 
 - name: Add Apache status config to each node
   copy:
-    src: /httpd/conf.d/status.conf
+    src: httpd/conf.d/status.conf
     dest: /etc/httpd/conf.d/status.conf
     owner: root
     group: root
     mode: '0644'
-  notify: restart httpd
 
 - name: Install pacemaker
   yum:
@@ -25,13 +38,19 @@
       - pcs
     state: present
 
-- name: Start and enable services
-  service:
-    name:
-      - pcsd
-      - firewalld
+- name: Start and enable pcsd
+  systemd:
+    name: pcsd
     state: started
+    daemon_reload: yes
     enabled: true 
+
+- name: Start and enable firewalld    
+  systemd:
+    name: firewalld
+    state: started
+    daemon_reload: yes   
+    enabled: true
 
 - name: Set common password for hacluster user
   user:
@@ -41,6 +60,20 @@
 - name: Add high-availability service to firewalld
   firewalld:
     service: high-availability
+    permanent: true
+    state: enabled
+  notify: reload firewalld
+
+- name: Add http service to firewalld
+  firewalld:
+    service: http
+    permanent: true
+    state: enabled
+  notify: reload firewalld
+
+- name: Add https service to firewalld
+  firewalld:
+    service: https
     permanent: true
     state: enabled
   notify: reload firewalld

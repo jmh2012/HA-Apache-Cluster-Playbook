@@ -1,5 +1,5 @@
 [primary]
-web1.local
+webnode1.local ansible_host=192.168.2.141
 
-[seconday]
-web2.local
+[secondary]
+webnode2.local ansible_host=192.168.2.119

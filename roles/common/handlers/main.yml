@@ -1,11 +1,11 @@
 ---
 
-- name: restart httpd
-  service:
-    name: httpd
-    state: restarted
-
 - name: reload firewalld
   shell: firewall-cmd --reload
   args:
     executable: /bin/bash
+
+- name: restart dbus
+  service:
+    name: dbus
+    state: restarted
