@@ -78,8 +78,14 @@
     state: enabled
   notify: reload firewalld
 
-- name: ensure Corosync and Pacemaker are enabled
-  service:
-    name:
-      - corosync
-      - pacemaker
+- name: ensure Corosync is enabled
+  systemd:
+    name: corosync
+    daemon_reload: yes
+    enabled: true
+
+- name: ensure Pacemaker is enabled
+  systemd:
+    name: pacemaker
+    daemon_reload: yes
+    enabled: true
